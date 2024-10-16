@@ -1,0 +1,229 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+    
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+        crossorigin="anonymous"></script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+
+    <title>Bucket List</title>
+
+    <style>
+        * {
+            font-family: 'Poppins', sans-serif;
+        }
+        /* .no-Poppins {
+            font-family: inherit;
+            font-weight: inherit;
+            font-size: inherit;
+        } */
+        .mypic {
+            width: 100%;
+            height: 200px;
+            background-image: linear-gradient(0deg, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('https://img.freepik.com/free-photo/flat-lay-notebook-with-list-desk_23-2148938724.jpg');
+            background-position: center;
+            background-size: contain-cover;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding-top: 20px;
+        }
+        .mypic > h1 {
+            font-size: 30px;
+        }
+        .mybox {
+            width: 95%;
+            max-width: 700px;
+            padding: 20px;
+            box-shadow: 0px 0px 10px 0px lightblue;
+            margin: 20px auto;
+        }
+        .mybucket {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .mybucket > input {
+            width: 70%;
+        }
+        .mybox > li {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 10px;
+            min-height: 48px;
+        }
+        .mybox > li > h2 {
+            max-width: 75%;
+            font-size: 20px;
+            font-weight: 500;
+            margin-right: auto;
+            margin-bottom: 0px;
+        }
+        .mybox > li > h2.done {
+            text-decoration:line-through
+        }
+        .mypic > h1 {
+            font-size: 40px;
+            font-weight: 600;
+
+        }
+        * {
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        
+    </style>
+
+    <script>
+        $(document).ready(function () {
+            show_bucket();  // Panggil fungsi untuk menampilkan bucket list saat halaman dimuat
+        });
+
+        function show_bucket() {
+            $("#bucket-list").empty();  // Kosongkan list sebelum diisi ulang
+            $.ajax({
+                type: "GET",
+                url: "/bucket",
+                success: function (response) {
+                    let rows = response["buckets"];
+                    for (let i = 0; i < rows.length; i++) {
+                        let bucket = rows[i]["bucket"];
+                        let num = rows[i]["num"];
+                        let done = rows[i]["done"];
+
+                        let temp_html = '';
+                        if (done == 0) {
+                            temp_html = `
+                                <li>
+                                    <h2>✅ ${bucket}</h2>
+                                    <button onclick="done_bucket(${num})" type="button" class="btn btn-outline-primary">Done!</button>
+                                </li>`;
+                        } else {
+                            temp_html = `
+                                <li>
+                                    <h2 class="done">✅ ${bucket}</h2>
+                                    <button onclick="delete_bucket(${num})" type="button" class="btn btn-outline-danger">Delete</button>
+                                </li>`;
+                        }
+                        $("#bucket-list").append(temp_html);  // Tambahkan item ke list
+                    }
+                },
+                error: function () {
+                    alert("Error retrieving bucket list");
+                }
+            });
+        }
+
+        function save_bucket() {
+            let bucket = $('#bucket').val();  // Ambil nilai input
+            if (!bucket) {
+                Swal.fire({
+                title: "Todolist Belum Diisi",
+                icon: "error"
+                });
+                return;
+            }
+            $.ajax({
+                type: "POST",
+                url: "/bucket",
+                data: {bucket_give: bucket},
+                success: function (response) {
+                    alert(response["msg"]);
+                    $('#bucket').val('');  // Kosongkan input setelah sukses
+                    show_bucket();  // Perbarui list
+                },
+                error: function () {
+                    alert("Error saving the bucket item");
+                }
+            });
+        }
+
+        function done_bucket(num) {
+            $.ajax({
+                type: "POST",
+                url: "/bucket/done",
+                data: {num_give: num},
+                success: function (response) {
+                    Swal.fire({
+                    title: "Todolist Selesai",
+                    text: response["msg"],
+                    icon: "success"
+                    });
+                    show_bucket();  // Perbarui list setelah item ditandai selesai
+                },
+                error: function () {
+                    Swal.fire({
+                        title: "Error!",
+                        text: "There was an issue marking the item .",
+                        icon: "error"
+                    });
+                }
+            });
+        }
+        function delete_bucket(num){
+            $.ajax({
+            type: 'POST',
+            url: '/bucket/delete',
+            data: {num_give : num},
+            success: function(response){
+                Swal.fire({
+                        title: "Dihapus!",
+                        text: response["msg"],
+                        icon: "success"
+                    });
+                    show_bucket();
+                },
+            error: function(){
+                Swal.fire({
+                    title: "Error!",
+                    text: "There was an issue deleting the item .",
+                    icon: "error"
+                });
+            }
+        });
+  }
+</script>
+    </script>
+</head>
+<body>
+    <div class="mypic">
+        <h1 class="text-todolist">Todolist</h1>
+    </div>
+    <div class="flex items-center justify-center text-2xl mt-10 mb-2 min-h-10 text-center">✅ Centang, Selesai, dan Rasakan Kepuasan</div>
+    <div class="flex justify-center">
+        <p class="text-center mt-2 mb-2 mx-auto w-5/6 md:w-1/2 text-lg break-words">
+            Kami hadir dengan solusi yang praktis dan mudah Aplikasi <strong>To-Do List</strong> yang dirancang untuk membantu Anda mengatur hidup lebih baik!
+        </p>
+    </div>
+    
+    <div class="mybox">
+        <div class="mybucket">
+            <input id="bucket" class="form-control" type="text" placeholder="Masukan Todolist Disini"">
+            <button onclick="save_bucket()" type="button" class="btn btn-outline-primary">Save</button>
+
+        </div>
+    </div>
+    <div class="mybox" id="bucket-list">
+    </div>
+</body>
+</html>

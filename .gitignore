@@ -1,0 +1,6 @@
+# Abaikan file .venv
+.venv/
+../.venv/
+.env
+# Abaikan file tertentu
+.DS_Store
