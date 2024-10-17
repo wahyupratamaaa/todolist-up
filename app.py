@@ -9,15 +9,11 @@ try:
     dotenv_path = join(dirname(__file__), '.env')
     load_dotenv(dotenv_path)
 
-    # MONGODB_URL = os.environ.get("MONGODB_URL")
-    # DB_NAME = os.environ.get("DB_NAME")
-
     MONGODB_URL = os.getenv("MONGODB_URL")
     DB_NAME = os.getenv("DB_NAME")
 
-    # env sambungan (perbaikan di sini)
-    client = MongoClient(MONGODB_URL)  # Gunakan tanda kurung biasa
-    db = client[DB_NAME]  # Gunakan tanda kurung untuk mengakses database
+    client = MongoClient(MONGODB_URL) 
+    db = client[DB_NAME] 
 
     app = Flask(__name__)
 
