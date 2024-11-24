@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" href="../static/EduBooks.png" type="image/png" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <title>Login</title>
+    <style>
+      /* Style Anda di sini tetap sama */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Poppins", sans-serif;
+        /* border: 1px solid red !important; */
+      }
+
+      body {
+        background-color: #f4f4f9;
+      }
+
+      .container {
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-image: url(../static/bg.svg);
+        background-repeat: no-repeat;
+        background-size: cover;
+      }
+
+      .box-login {
+        width: auto;
+        border: 2px solid #ddd;
+        border-radius: 8px;
+        padding: 5rem;
+        display: flex;
+        align-items: center;
+        background-color: #fff;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+      }
+
+      .wrap {
+        display: flex;
+        align-items: center;
+        gap: 5rem;
+      }
+
+      .form-group {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .form-group h1 {
+        font-weight: 600;
+        font-size: 2rem;
+        color: #333;
+        /* width: 50%; */
+        margin-bottom: 1.5rem;
+      }
+
+      .form-control {
+        padding: 0.8rem;
+        margin-top: 0.8rem;
+        background-color: #f1f1f1;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        width: 70%;
+        font-size: 1rem;
+        color: #333;
+        transition: all 0.3s ease;
+      }
+
+      .form-control:focus {
+        outline: none;
+        border-color: #0056b3;
+        background-color: #fff;
+      }
+
+      .btn {
+        margin-top: 1.5rem;
+        padding: 0.5rem;
+        width: 6rem;
+        border: none;
+        color: gray;
+        font-size: 1rem;
+        font-weight: 500;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+      }
+
+      .btn:hover {
+        background-color: #b9e5e8;
+        color: white;
+      }
+
+      .icon {
+        width: 500px;
+        border-radius: 15px;
+        object-fit: cover;
+      }
+
+      .daftar {
+        display: flex;
+        align-items: flex-end;
+        margin-left: auto;
+        color: gray;
+        margin-top: 1rem;
+      }
+
+      .daftar a {
+        text-decoration: none;
+        color: #7ab2d3;
+      }
+      .icon-box {
+        width: 30%;
+        height: auto;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .form-box {
+        width: 60%;
+        height: auto;
+        padding: 2rem;
+        background-color: #fff;
+        border: 1px solid #ddd;
+        border-radius: 15px;
+        /* box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); */
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="box-login">
+        <div class="wrap">
+          <div class="icon-box">
+            <img
+              src="../static/logintalent.png"
+              style="
+                filter: hue-rotate(180deg);
+                width: 70%;
+                height: auto;
+                opacity: 60%;
+              "
+              alt="icon"
+              class="icon"
+            />
+          </div>
+          <div class="form-box">
+            <form id="form-login" class="form-group">
+              <h1 style="color: gray">
+                Masuk ToDoList Mulai Produktivitas Anda!
+              </h1>
+              <input
+                type="text"
+                placeholder="Username"
+                class="form-control"
+                id="username"
+                required
+              />
+              <input
+                type="password"
+                placeholder="Password"
+                class="form-control"
+                id="password"
+                required
+              />
+              <button type="submit" class="btn">Login</button>
+              <h5 class="daftar">
+                belum punya akun ?
+                <a href="/registodolist">&nbsp;&nbsp;Daftar Sekarang</a>
+              </h5>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      $(document).ready(function () {
+        $("#form-login").on("submit", function (e) {
+          e.preventDefault();
+
+          const username = $("#username").val();
+          const password = $("#password").val();
+
+          $.ajax({
+            url: "/logintodolist",
+            type: "POST",
+            contentType: "application/json",
+            data: JSON.stringify({
+              username: username,
+              password: password,
+            }),
+            success: function (data) {
+              console.log("data response", data);
+              Swal.fire({
+                icon: "success",
+                title: "Login Berhasil",
+                text: data.message + "" + username,
+                timer: 3000,
+                timerProgressBar: true,
+              }).then(() => {
+                localStorage.setItem("username", username);
+                // localStorage.setItem("password", password);
+                window.location.href = "/todo";
+              });
+            },
+            error: function (xhr) {
+              Swal.fire({
+                icon: "error",
+                title: "Login Gagal",
+                text: xhr.responseJSON.error || "Terjadi kesalahan saat login",
+              });
+            },
+          });
+        });
+      });
+    </script>
+  </body>
+</html>
