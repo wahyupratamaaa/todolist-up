@@ -1,0 +1,13 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "app.py",
+      "use": "@vercel/python"
+    }
+  ],
+  "env": {
+    "MONGODB_URL": "mongodb+srv://test:test@cluster0.s4ytm.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0",
+    "DB_NAME": "apptodolist"
+  }
+}
